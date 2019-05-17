@@ -237,6 +237,7 @@ extension DataSource: UITableViewDataSource {
         return section(at: sectionIndex)?.footer?.viewHeight ?? tableView.style.defaultSectionExtremityHeight
     }
 
+    #if !os(tvOS)
     public func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
         return row(at: indexPath)?.canEdit ?? false
     }
@@ -263,6 +264,7 @@ extension DataSource: UITableViewDataSource {
             return rowAction
         }
     }
+    #endif
 
     public func sectionIndexTitles(for tableView: UITableView) -> [String]? {
         guard let sectionIndexTitles = sectionIndexTitles, sectionIndexTitles.count >= sections.count else { return nil }

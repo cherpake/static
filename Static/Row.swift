@@ -44,9 +44,13 @@ public struct Row: Hashable, Equatable {
         public var type: UITableViewCell.AccessoryType {
             switch self {
             case .disclosureIndicator: return .disclosureIndicator
+            #if !os(tvOS)
             case .detailDisclosureButton(_): return .detailDisclosureButton
+            #endif
             case .checkmark: return .checkmark
+            #if !os(tvOS)
             case .detailButton(_): return .detailButton
+            #endif
             default: return .none
             }
         }
@@ -55,8 +59,10 @@ public struct Row: Hashable, Equatable {
         public var view: UIView? {
             switch self {
             case .view(let view): return view
+            #if !os(tvOS)
             case .switchToggle(let value, let valueChange):
                 return SwitchAccessory(initialValue: value, valueChange: valueChange)
+            #endif
             case .checkmarkPlaceholder:
                 return UIView(frame: CGRect(x: 0, y: 0, width: 24, height: 24))
             case .segmentedControl(let items, let selectedIndex, let valueChange):
@@ -76,6 +82,8 @@ public struct Row: Hashable, Equatable {
     }
 
     public typealias Context = [String: Any]
+    
+    #if !os(tvOS)
     public typealias EditActionSelection = (IndexPath) -> ()
 
     /// Representation of an editing action, when swiping to edit a cell.
@@ -103,6 +111,7 @@ public struct Row: Hashable, Equatable {
             self.selection = selection
         }
     }
+    #endif
 
     // MARK: - Properties
 
@@ -133,12 +142,14 @@ public struct Row: Hashable, Equatable {
     /// Additional information for the row.
     public var context: Context?
     
+    #if !os(tvOS)
     /// Actions to show when swiping the cell, such as Delete.
     public var editActions: [EditAction]
 
     var canEdit: Bool {
         return editActions.count > 0
     }
+    #endif
 
     var isSelectable: Bool {
         return selection != nil
@@ -155,8 +166,9 @@ public struct Row: Hashable, Equatable {
 
     // MARK: - Initializers
 
+    #if !os(tvOS)
     public init(text: String? = nil, detailText: String? = nil, selection: Selection? = nil,
-        image: UIImage? = nil, accessory: Accessory = .none, cellClass: Cell.Type? = nil, context: Context? = nil, editActions: [EditAction] = [], uuid: String = UUID().uuidString, accessibilityIdentifier: String? = nil) {
+                image: UIImage? = nil, accessory: Accessory = .none, cellClass: Cell.Type? = nil, context: Context? = nil, editActions: [EditAction] = [], uuid: String = UUID().uuidString, accessibilityIdentifier: String? = nil) {
         self.accessibilityIdentifier = accessibilityIdentifier
         self.uuid = uuid
         self.text = text
@@ -168,6 +180,20 @@ public struct Row: Hashable, Equatable {
         self.context = context
         self.editActions = editActions
     }
+    #else
+    public init(text: String? = nil, detailText: String? = nil, selection: Selection? = nil,
+                image: UIImage? = nil, accessory: Accessory = .none, cellClass: Cell.Type? = nil, context: Context? = nil, uuid: String = UUID().uuidString, accessibilityIdentifier: String? = nil) {
+        self.accessibilityIdentifier = accessibilityIdentifier
+        self.uuid = uuid
+        self.text = text
+        self.detailText = detailText
+        self.selection = selection
+        self.image = image
+        self.accessory = accessory
+        self.cellClass = cellClass ?? Value1Cell.self
+        self.context = context
+    }
+    #endif
 }
 
 
